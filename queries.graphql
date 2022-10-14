@@ -1,0 +1,73 @@
+query Gradle(
+  $workfs: DirectoryID!
+  $cmd: String = "build"
+  $gradle: String = "gradle"
+) {
+  container {
+    from(address: "gradle:latest") {
+      withMountedDirectory(path: "/app", source: $workfs) {
+        withWorkdir(path: "/app") {
+          exec(args: [$gradle, $cmd, "--no-daemon"]) {
+            stdout {
+              contents
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+query Workdir {
+  host {
+    workdir {
+      read {
+        id
+      }
+    }
+  }
+}
+
+query JUnitExample {
+  git(url: "https://github.com/junit-team/junit5-samples") {
+    branch(name: "main") {
+      tree {
+        directory(path: "/junit5-jupiter-starter-gradle") {
+          id
+        }
+      }
+    }
+  }
+}
+
+query BuildTomcat($workfs: DirectoryID!) {
+  container {
+    from(address: "eclipse-temurin:11.0.12_7-jdk-focal") {
+      exec(args: ["apt", "update"]) {
+        exec(args: ["apt", "install", "ant", "-y"]) {
+          withMountedDirectory(path: "/src", source: $workfs) {
+            withWorkdir(path: "/src") {
+              exec(args: ["ant"]) {
+                stdout {
+                  contents
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+query TomcatWorkdir {
+  host {
+    workdir {
+      read {
+        directory(path: "tomcat/apache-tomcat-10.0.27-src") {
+          id
+        }
+      }
+    }
+  }
+}
