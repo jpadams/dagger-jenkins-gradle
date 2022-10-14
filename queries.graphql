@@ -6,7 +6,6 @@ query Cache {
   }
 }
 
-
 query Gradle($workfs: DirectoryID!, $cachevol: CacheID!) {
   container {
     from(address: "gradle:latest") {
