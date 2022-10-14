@@ -1,7 +1,7 @@
 query Workdir { host { workdir { read { id } } } }
 
 query Cache {
-  cacheFromTokens(tokens: ["dagger-gradle-example"]) {
+  cacheVolume(key: "dagger-gradle-demo") {
     id
   }
 }
