@@ -1,7 +1,8 @@
 # dagger-jenkins-gradle
-
-run this locally with:
+Run this locally with:
 
 ```
 ./dagger.sh
 ```
+
+The script drives queries in [`queries.graphql`](./queries.graphql).
