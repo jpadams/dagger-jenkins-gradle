@@ -1,0 +1,28 @@
+query Workdir { host { workdir { read { id } } } }
+
+query Cache {
+  cacheFromTokens(tokens: ["dagger-gradle-example"]) {
+    id
+  }
+}
+
+
+query Gradle($workfs: DirectoryID!, $cachevol: CacheID!) {
+  container {
+    from(address: "gradle:latest") {
+      withMountedCache(cache: $cachevol, path: "/mnt/gradle") {
+        withMountedDirectory(path: "/app", source: $workfs) {
+          withWorkdir(path: "/app") {
+            exec(args: ["gradle", "build", "--no-daemon", "--build-cache", "--gradle-user-home=/mnt/gradle"]) {
+              exec(args: ["gradle", "run", "--no-daemon", "--build-cache", "--gradle-user-home=/mnt/gradle"]) {
+                stdout {
+                  contents
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
