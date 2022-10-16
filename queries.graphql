@@ -1,19 +1,11 @@
-query Workdir { host { workdir { read { id } } } }
-
-query Cache {
-  cacheVolume(key: "dagger-gradle-demo") {
-    id
-  }
-}
-
-query Gradle($workfs: DirectoryID!, $cachevol: CacheID!) {
+query Gradle($workfs: DirectoryID!, $cachevol: CacheID!, $cmd: String!) {
   container {
     from(address: "gradle:latest") {
       withMountedCache(cache: $cachevol, path: "/mnt/gradle") {
         withMountedDirectory(path: "/app", source: $workfs) {
           withWorkdir(path: "/app") {
             exec(args: ["gradle", "build", "--no-daemon", "--build-cache", "--gradle-user-home=/mnt/gradle"]) {
-              exec(args: ["gradle", "run", "--no-daemon", "--build-cache", "--gradle-user-home=/mnt/gradle"]) {
+              exec(args: ["gradle", $cmd, "--no-daemon", "--build-cache", "--gradle-user-home=/mnt/gradle"]) {
                 stdout {
                   contents
                 }
@@ -23,5 +15,35 @@ query Gradle($workfs: DirectoryID!, $cachevol: CacheID!) {
         }
       }
     }
+  }
+}
+
+query Workdir {
+  host {
+    workdir {
+      read {
+        id
+      }
+    }
+  }
+}
+
+query JUnitExample {
+  git(
+    url: "https://github.com/junit-team/junit5-samples"
+  ) {
+    branch(name: "main") {
+      tree {
+        directory(path: "/junit5-jupiter-starter-gradle") {
+          id
+        }
+      }
+    }
+  }
+}
+
+query Cache {
+  cacheVolume(key: "dagger-gradle-demo") {
+    id
   }
 }

@@ -2,12 +2,17 @@ pipeline {
   agent { label 'cloak' }
   
   stages {
-    stage("Run Gradle with Dagger") {
+    stage("Gradle build/run with Dagger") {
       steps {
         sh '''
-
-          ./dagger.sh
-
+          ./dagger1.sh
+        '''
+      }
+    }
+    stage("Gradle build/test from GitHub with Dagger") {
+      steps {
+        sh '''
+          ./dagger2.sh
         '''
       }
     }
